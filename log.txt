@@ -1,0 +1,22 @@
+Locator expected to be checked
+Call log:
+Locator.expect with timeout 5000ms
+waiting for getByRole(AriaRole.RADIO, new Page.GetByRoleOptions().setName("HTML"))
+  locator resolved to <input id="html" type="radio" value="HTML" name="fav_la…/>
+  unexpected value "unchecked"
+  locator resolved to <input id="html" type="radio" value="HTML" name="fav_la…/>
+  unexpected value "unchecked"
+  locator resolved to <input id="html" type="radio" value="HTML" name="fav_la…/>
+  unexpected value "unchecked"
+  locator resolved to <input id="html" type="radio" value="HTML" name="fav_la…/>
+  unexpected value "unchecked"
+  locator resolved to <input id="html" type="radio" value="HTML" name="fav_la…/>
+  unexpected value "unchecked"
+  locator resolved to <input id="html" type="radio" value="HTML" name="fav_la…/>
+  unexpected value "unchecked"
+  locator resolved to <input id="html" type="radio" value="HTML" name="fav_la…/>
+  unexpected value "unchecked"
+  locator resolved to <input id="html" type="radio" value="HTML" name="fav_la…/>
+  unexpected value "unchecked"
+  locator resolved to <input id="html" type="radio" value="HTML" name="fav_la…/>
+  unexpected value "unchecked"
