@@ -1,5 +1,6 @@
 plugins {
-    id("java")
+    application
+    java
 }
 
 group = "com.jakobzeise"
@@ -18,4 +19,8 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+application {
+    mainClass.set("com.microsoft.playwright.CLI")
 }

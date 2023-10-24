@@ -23,11 +23,6 @@ public class AssertionsExample {
 
 
             Locator radioButton = page.getByRole(AriaRole.RADIO, new Page.GetByRoleOptions().setName("HTML"));
-            assertThat(radioButton).isVisible();
-
-
-
-
 
 
         } catch (AssertionFailedError error) {
