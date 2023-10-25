@@ -6,30 +6,27 @@ import com.microsoft.playwright.options.AriaRole;
 import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-
-import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
 public class William {
 
     public static void main(String[] args) {
 
-
         Playwright playwright = Playwright.create();
-        BrowserType.LaunchOptions launchOptions = new BrowserType.LaunchOptions().setHeadless(false).setSlowMo(500).setArgs(List.of("--start-maximized"));
+        BrowserType.LaunchOptions launchOptions = new BrowserType.LaunchOptions()
+                .setHeadless(false)
+                .setArgs(List.of("--start-maximized"));
+
         Browser browser = playwright.chromium().launch(launchOptions);
         BrowserContext browserContext = browser.newContext(new Browser.NewContextOptions().setViewportSize(null));
+        browserContext.clearCookies();
         Page page = browserContext.newPage();
         String url, adminUserName, adminPassWord, logString, testName;
-        //url = "https://example.test.recognia.com/serve.shtml?page=login";
-        //adminUserName = "TESTAUTOMATION";
-        //adminPassWord = "Test1Test23456789!";
-        url = "https://example.dev.recognia.com/";
-        adminUserName = "yueyong.huang@tradingcentral.com";
-        adminPassWord = "JE4k930zjaUlffK";
+        url = "https://example.test.recognia.com/serve.shtml?page=login";
+        adminUserName = "TESTAUTOMATION";
+        adminPassWord = "Test1Test23456789!";
         logString = "";
         testName = getTestName();
 
@@ -37,21 +34,48 @@ public class William {
         enterText(page, "User ID", adminUserName);
         enterText(page, "Password", adminPassWord);
         clickButton(page, "Login");
+
+        page.reload();
+
         logString += verifyTextOnPage(page, "Our diverse analytical scope, broad market coverage, and flexible integration methods make it easy to support your investors in the moments that matter.", testName);
         clickButton(page, "Products");
         clickLink(page, "Technical Insight");
-        pause(); // hardcode time out as not sure how to wait for page to load properly at the moment
-        clickLink(page, " Screener ");
-        pause();
+        // hardcode time out as not sure how to wait for page to load properly at the moment
+
+        page.waitForCondition(() -> page.getByLabel("Screener").isVisible());
+
+        clickLabel(page, "Screener");
+
         logString += verifyLinkOnPage(page, " Alert Center ", testName);
-        logString += verifyLinkOnPage(page, "Google homepage", testName);
+        logString += verifyLinkOnPage(page, "Homepage", testName);
         checkBoxSelection(page, "Optionable", true);
+
+        page.locator("button").filter(new Locator.FilterOptions().setHasText("search")).click();
+        page.getByRole(AriaRole.SEARCHBOX).fill("Tesla");
+        page.locator(".tc-new-layover").click();
+
+
+
+        clickLink(page, "Watchlists");
+        clickButton(page, "New Watchlist");
+        page.getByLabel("Enter a name to describe your new watchlist.").fill("Test");
+        clickButton(page, "Add");
+
+        pause();
+
         generateTestLog(logString, testName);
         playwright.close();
+    }
+    public static void pause(){
+        try {
+            Thread.sleep(5000);
+        } catch (Exception ignored) {
 
+        }
     }
 
-    public static void checkBoxSelection(Page page, String checkBoxLabel, Boolean expectState) {
+
+    public static void checkBoxSelection(Page page, String checkBoxLabel, boolean expectState) {
         Locator checkBox = page.locator("//div[normalize-space()='" + checkBoxLabel + "']");
         if (expectState) {
             checkBox.check();
@@ -60,6 +84,8 @@ public class William {
         }
     }
 
+
+    // TODO
     public static void clickRadioButton(Page page, String radioButtonOption) {
         page.getByRole(AriaRole.RADIO, new Page.GetByRoleOptions().setName("Create your own Gmail address")).click();
         /*
@@ -85,6 +111,7 @@ public class William {
          */
     }
 
+    // TODO
     public static void selectDropDownOption(Page page, String dropDownFieldID, String targetDropDownOption) {
         try {
             page.selectOption("#" + dropDownFieldID, targetDropDownOption);
@@ -93,6 +120,7 @@ public class William {
         }
     }
 
+    //TODO
     public static void clickImg(Page page, String imageText) {
         Locator image = page.getByRole(AriaRole.IMG, new Page.GetByRoleOptions().setName(imageText));
         if (image.count() > 0) {
@@ -103,7 +131,16 @@ public class William {
     }
 
     public static String getTestName() {
-        return Object.class.getEnclosingClass().getSimpleName();
+        return William.class.getSimpleName();
+    }
+
+    public static void clickLabel(Page page, String labelText) {
+        Locator label = page.getByLabel(labelText, new Page.GetByLabelOptions().setExact(true));
+        if (label.count() == 0) {
+            System.out.println("Label '" + labelText + "' is not found on page!");
+        } else {
+            label.click();
+        }
     }
 
     public static void clickLink(Page page, String linkText) {
@@ -134,34 +171,26 @@ public class William {
     }
 
 
-    public static void pause() {
-        try {
-            Thread.sleep(5000);
-        } catch (Exception e) {
-
-        }
-    }
-
     public static void generateTestLog(String logString, String testName) {
 
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String currentTime = formatter.format(date);
-        String folderPath = "C:\\Users\\Yueyong Huang\\IdeaProjects\\AutomatedTestReport\\" + testName;
-        File folder = new File(folderPath);
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
         String fileName;
+        String path = "src\\main\\java\\day3\\homework\\Logs";
+        if (new File(path).mkdirs()) {
+            System.out.println("Directory 'Logs' created");
+        }
         if (logString.contains("error")) {
             fileName = testName + "_" + currentTime + "-error.txt";
         } else {
             fileName = testName + "_" + currentTime + ".txt";
         }
-
         try {
-            File file = new File(folderPath, fileName);
-            file.createNewFile();
+            File file = new File(path + "\\" + fileName);
+            if (file.createNewFile()) {
+                System.out.println("File '" + fileName + "' created");
+            }
             FileWriter fileWriter = new FileWriter(file);
             fileWriter.write(logString);
             fileWriter.close();
@@ -176,27 +205,21 @@ public class William {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
         String currentTime = formatter.format(date);
 
-        String folderPath = "C:\\Users\\Yueyong Huang\\IdeaProjects\\AutomatedTestReport\\" + testName;
-        File folder = new File(folderPath);
-        if (!folder.exists()) {
-            folder.mkdir();
+
+        String path = "src\\main\\java\\day3\\homework\\Screenshots\\";
+        if (new File(path).mkdirs()) {
+            System.out.println("Directory 'Logs' created");
         }
         String fileName = testName + "_" + currentTime + ".png";
-        Path path = Paths.get(folderPath, fileName);
-        page.screenshot(new Page.ScreenshotOptions().setPath(path).setFullPage(true));
+        page.screenshot(new Page.ScreenshotOptions().setPath(Path.of(path + fileName)).setFullPage(true));
         return fileName;
     }
 
     public static String verifyTextOnPage(Page page, String textValue, String testName) {
-        List<Locator> elements = page.locator(":has-text('" + textValue + "')").all();
-        if (!elements.isEmpty()) {
-            for (Locator element : elements) {
-                if (element.isVisible()) {
-                    return "'" + textValue + "' is found on the page.\n";
-                }
-            }
-        }
+        if (page.locator("p", new Page.LocatorOptions().setHasText(textValue)).isVisible())
+            return "'" + textValue + "' is found on the page.\n";
         String screenshotFileName = takeScreenShot(page, testName);
+        System.out.println("error - '" + textValue + "' is NOT found on the page! Screenshot - " + screenshotFileName + "\n");
         return "error - '" + textValue + "' is NOT found on the page! Screenshot - " + screenshotFileName + "\n";
     }
 
@@ -214,3 +237,16 @@ public class William {
     }
 }
 
+
+//Questions:
+// search field - img or button or what?
+//      page.locator("button").filter(new Locator.FilterOptions().setHasText("search")).click();
+
+// how to locate new watchlist input field?
+//      page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("New Watchlist")).click();
+//      page.getByLabel("Enter a name to describe your new watchlist.").fill("Test");
+//      page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Add")).click();
+
+
+// how to wait for page to load? TV, screener
+//      page.waitForCondition(() -> page.getByLabel("Screener").isVisible());
