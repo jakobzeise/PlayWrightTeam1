@@ -55,7 +55,7 @@ public class IoanaCorrection {
             List<Locator> countries = page.getByRole(AriaRole.MENUITEMCHECKBOX).all();
             for (Locator l : countries) {
                 System.out.println(l.textContent() + "selected :  " + l.getAttribute("aria-selected"));
-                if (!l.getAttribute("aria-selected").equals("false")) {
+                if (l.getAttribute("aria-selected").equals("true")) {
                     l.click();
                 }
             }

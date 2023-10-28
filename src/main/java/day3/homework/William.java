@@ -2,6 +2,7 @@ package day3.homework;
 
 import com.microsoft.playwright.*;
 import com.microsoft.playwright.options.AriaRole;
+import com.microsoft.playwright.options.LoadState;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -17,6 +18,7 @@ public class William {
         Playwright playwright = Playwright.create();
         BrowserType.LaunchOptions launchOptions = new BrowserType.LaunchOptions()
                 .setHeadless(false)
+                .setSlowMo(500)
                 .setArgs(List.of("--start-maximized"));
 
         Browser browser = playwright.chromium().launch(launchOptions);
@@ -35,6 +37,7 @@ public class William {
         enterText(page, "Password", adminPassWord);
         clickButton(page, "Login");
 
+
         page.reload();
 
         logString += verifyTextOnPage(page, "Our diverse analytical scope, broad market coverage, and flexible integration methods make it easy to support your investors in the moments that matter.", testName);
@@ -43,6 +46,10 @@ public class William {
         // hardcode time out as not sure how to wait for page to load properly at the moment
 
         page.waitForCondition(() -> page.getByLabel("Screener").isVisible());
+
+//        page.waitForLoadState(LoadState.LOAD);
+//        page.waitForLoadState(LoadState.DOMCONTENTLOADED);
+//        page.waitForLoadState(LoadState.NETWORKIDLE);
 
         clickLabel(page, "Screener");
 
@@ -54,12 +61,16 @@ public class William {
         page.getByRole(AriaRole.SEARCHBOX).fill("Tesla");
         page.locator(".tc-new-layover").click();
 
-
-
         clickLink(page, "Watchlists");
         clickButton(page, "New Watchlist");
         page.getByLabel("Enter a name to describe your new watchlist.").fill("Test");
         clickButton(page, "Add");
+
+        clickLabel(page, "Screener");
+        clickButton(page, "Market Capitalization tooltip");
+        page.locator("#mat-radio-9").getByText("Mid Cap").click();
+
+
 
         pause();
 

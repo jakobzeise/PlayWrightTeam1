@@ -14,11 +14,13 @@ public class PageNavigation {
 
             Page page = browser.newPage();
 
-            page.navigate("http://127.0.0.1:5500/RadioButton.html");
 
-            Response response = page.navigate("https://trasdingcentral.com");
+            Response response = page.navigate("https://tradingcentral.com/thiswebsitedoesnotexist");
+//            Response navigate = page.navigate("https://asldkfjasdölfkjasdöflkj.com");
 
-            System.out.println(response.status());
+            System.out.println("navigate.status() = " + response.status());
+//            System.out.println(response.status());
+            // 404
 
 
             page.goForward();

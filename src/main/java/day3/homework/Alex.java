@@ -15,8 +15,8 @@ public class Alex {
                 Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setSlowMo(3000).setHeadless(false));
                 Page page = browser.newPage()
         ) {
-            page.navigate("https://google.com");
 
+            page.navigate("https://google.com");
 
             Locator object1 = page.getByRole(AriaRole.LINK, new Page.GetByRoleOptions().setName("Gmail"));
 
